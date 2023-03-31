@@ -5,6 +5,7 @@ biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
 REPO="https://raw.githubusercontent.com/myridwan/abc/ipuk/"
 echo -e " [INFO] Downloading Update File"
 sleep 2
+rm -rf /tmp/menu
 wget -O /tmp/menu-master.zip "${REPO}config/menu.zip" >/dev/null 2>&1
     mkdir /tmp/menu
     7z e  /tmp/menu-master.zip -o/tmp/menu/ >/dev/null 2>&1
