@@ -12,5 +12,8 @@ wget -O /tmp/menu-master.zip "${REPO}config/menu.zip" >/dev/null 2>&1
     chmod +x /tmp/menu/*
     mv /tmp/menu/* /usr/sbin/
 echo -e " [INFO] Update Successfully"
+rm -rf update.sh
 sleep 2
+read -n 1 -s -r -p "Press [ Enter ] to back on menu"
+menu
 exit
