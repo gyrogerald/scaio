@@ -138,6 +138,7 @@ function add_domain() {
 
     if test $dom -eq 1; then
     clear
+    apt install jq curl -y
     wget -q -O /root/cf "${CDNF}/cf" >/dev/null 2>&1
     chmod +x /root/cf
     bash /root/cf | tee /root/install.log
