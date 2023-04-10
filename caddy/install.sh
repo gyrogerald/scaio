@@ -1,0 +1,140 @@
+#!/bin/bash
+#!/bin/bash
+# Color Validation
+Lred='\e[1;91m'
+Lgreen='\e[92m'
+Lyellow='\e[93m'
+green='\e[32m'
+RED='\033[0;31m'
+NC='\033[0m'
+BGBLUE='\e[1;44m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0;37m'
+# ===================
+echo ''
+clear
+echo ''
+echo -e "$green.........................................................."$NC
+echo -e "$BGBLUE                ⚡ PREMIUM SPEED SCRIPT ⚡                "$NC
+echo -e "$green.........................................................."$NC
+echo -e "               Autoscript Mod By ( Kyt Project )" | lolcat
+echo -e "                    CONTACT TELEGRAM"$NC | lolcat
+echo -e "                       @Kytxz"$NC | lolcat
+echo -e "                       @rstorx"$NC | lolcat
+echo -e "$green.........................................................."$NC
+echo -e "$BGBLUE                       Tunggu 5 Detik!                    "$NC
+echo -e "$green.........................................................."$NC
+sleep 5
+clear
+if [ "${EUID}" -ne 0 ]; then
+                echo "You need to run this script as root"
+                exit 1
+fi
+if [ "$(systemd-detect-virt)" == "openvz" ]; then
+                echo "OpenVZ is not supported"
+                exit 1
+fi
+red='\e[1;31m'
+green='\e[0;32m'
+NC='\e[0m'
+#IZIN SCRIPT
+MYIP=$(curl -sS ipv4.icanhazip.com)
+echo -e "\e[32mloading...\e[0m"
+clear
+# Valid Script
+VALIDITY() {
+    today=$(date -d "0 days" +"%Y-%m-%d")
+    Exp1=$(curl https://raw.githubusercontent.com/myridwan/izinvps/ipuk/ip | grep $MYIP | awk '{print $4}')
+    if [[ $today < $Exp1 ]]; then
+        echo -e "\e[32mAUTOSCRIPT SUKSES..\e[0m"
+        sleep 5
+    else
+    echo -e "\e[31mScript Anda Telah Expired !!\e[0m";
+    echo -e "\e[31mTolong Renew Dengan Owner Script @tau_samawa\e[0m"
+    exit 0
+    fi
+}
+IZIN=$(curl https://raw.githubusercontent.com/myridwan/izinvps/ipuk/ip | awk '{print $5}' | grep $MYIP)
+if [ $MYIP = $IZIN ]; then
+echo -e "\e[32mPermohonan diterima...\e[0m"
+    VALIDITY
+else
+echo -e "$green.........................................................."$NC
+echo -e "$BGBLUE                ⚡ PREMIUM SPEED SCRIPT ⚡                "$NC
+echo -e "$green.........................................................."$NC
+echo -e "$RED                PERMISSION DENIED/AKSES DITOLAK"$NC
+echo -e "               Autoscript Mod By ( Kyt Project )" | lolcat
+echo -e "                    CONTACT TELEGRAM"$NC | lolcat
+echo -e "                       @Kytxz"$NC | lolcat
+echo -e "                       @rstorx"$NC | lolcat
+echo -e "$green.........................................................."$NC
+echo -e "$BGBLUE                       Tunggu To Exit!                    "$NC
+echo -e "$green.........................................................."$NC
+sleep 3
+    rm -f main.sh
+    exit 0
+fi
+clear
+CLNAME=$(curl https://raw.githubusercontent.com/myridwan/izinvps/ipuk/ip | grep $MYIP | awk '{print $2}')
+if [ $MYIP = $CLNAME ]; then
+echo ""
+fi
+clear
+echo -e "\e[32mloading...\e[0m"
+clear
+REPO="https://raw.githubusercontent.com/myridwan/abc/ipuk/"
+
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg --yes  >/dev/null 2>&1
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list  >/dev/null 2>&1
+sudo apt install caddy
+
+### Tambah konfigurasi Caddy
+function caddy(){
+    mkdir -p /etc/caddy
+    wget -O /etc/caddy/vmess "${REPO}caddy/vmess" >/dev/null 2>&1
+    wget -O /etc/caddy/vless "${REPO}caddy/vless" >/dev/null 2>&1
+    wget -O /etc/caddy/trojan "${REPO}caddy/trojan" >/dev/null 2>&1
+    wget -O /etc/caddy/ss-ws "${REPO}caddy/ss-ws" >/dev/null 2>&1
+    cat >/etc/caddy/Caddyfile <<-EOF
+$domain:443
+{
+    tls taibabi17@gmail.com
+    encode gzip
+
+    import vless
+    handle_path /vless {
+        reverse_proxy localhost:10001
+
+    }
+
+    import vmess
+    handle_path /vmess {
+        reverse_proxy localhost:10002
+    }
+
+    import trojan
+    handle_path /trojan-ws {
+        reverse_proxy localhost:10003
+    }
+
+    import ss
+    handle_path /ss-ws {
+        reverse_proxy localhost:10004
+    }
+
+    handle {
+        reverse_proxy https://$domain {
+            trusted_proxies 0.0.0.0/0
+            header_up Host {upstream_hostport}
+        }
+    }
+}
+EOF
+}
+
+caddy
+systemctl stop caddy
+systemctl enable --now caddy
